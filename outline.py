@@ -15,7 +15,7 @@ Lloyd(pInit, phi):
         end
 
 arcDistance(p,q,R):
-
+#Comment
 
 computePhi():
     do this everywhere
