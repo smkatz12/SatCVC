@@ -96,9 +96,9 @@ function compute_voronoi(p::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{
 				end
 			end
 			if haskey(V, closest_robot)
-				V[closest_robot] = vcat(V[closest_robot], [ψdisc[i],λdisc[j]]) # This may not work immediately (may have to mess with transposes/dimensions)
+				V[closest_robot] = vcat(V[closest_robot], [ψdisc[i] λdisc[j]]) # This may not work immediately (may have to mess with transposes/dimensions)
 			else
-				V[closest_robot] = [ψdisc[i],λdisc[j]]
+				V[closest_robot] = [ψdisc[i] λdisc[j]]
 			end
 		end
 	end
