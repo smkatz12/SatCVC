@@ -25,6 +25,7 @@ function simulate_cvc
 	- ψdisc: discretized ψ points
 	- λdisc: discretized λ points
 	- k: controller gain (this will need tuning)
+	- r: radius of the sphere
 	-------------
 	- max_iter: maximum number of time steps
 	- tol: magnitude of change in position must be smaller than this to declare convergence
@@ -33,7 +34,7 @@ function simulate_cvc
 	OUTPUTS:
 	- p: final position of the robots (set up the same as p0) 
 """
-function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{Real,1}, k::Real;
+function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{Real,1}, k::Real, r::Real;
 	max_iter = 100, tol = 0.1, dt = 0.1)
 	p = p₀
 	for j = 1:max_iter # Using j so that I can use i for the robots (sorry this is backwards)
@@ -41,7 +42,7 @@ function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{
 		pnew = zeros(size(p₀))
 
 		# Compute the voronoi region of each robot
-		V = compute_voronoi(p, ψdisc, λdisc)
+		V = compute_voronoi(p, ψdisc, λdisc, r)
 
 		# Iterate though each robot
 		for i = 1:size(p,1)
@@ -49,7 +50,7 @@ function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{
 			CVᵢ = compute_centroid(V[i])
 			
 			# Find ṗᵢ
-			ṗᵢ = k*(CVᵢ-p[i,:])
+			ṗᵢ = k*rel_vector(CVᵢ,p[i,:]) # k*(CVᵢ-p[i,:])
 
 			# Update p
 			pnew[i,:] = p[i,:] + ṗᵢ*dt
@@ -69,6 +70,11 @@ function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{
 end
 
 """
+function rel_vector - Somrita
+"""
+
+
+"""
 function compute_voronoi
 	- return all of the discretized points in the voronoi region of Q
 	(according to our geodesic distance function)
@@ -78,18 +84,19 @@ function compute_voronoi
 	- p: current robot positions
 	- ψdisc: discretized ψ points
 	- λdisc: discretized λ points
+	- r: radius of the sphere
 
 	OUTPUTS:
 	- V: Dictionary mapping robot index to array of points in Voronoi region
 """
-function compute_voronoi(p::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{Real,1})
+function compute_voronoi(p::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{Real,1}, r::Real)
 	V = Dict{Int64,Array{Real,2}}()
 	for i = 1:length(ψdisc)
 		for j = 1:length(λdisc)
 			min_dist = Inf
 			closest_robot = 0
 			for k = 1:size(p,1) # num robots
-				dist = d([ψdisc[i],λdisc[j]], p[k,:]) # Distance between discretized point and robot k
+				dist = d([ψdisc[i],λdisc[j]], p[k,:], r) # Distance between discretized point and robot k
 				if dist < min_dist
 					min_dist = dist
 					closest_robot = k
@@ -106,7 +113,7 @@ function compute_voronoi(p::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{
 end
 
 """
-function d
+function d - Keiko
 	- computes distance between two points on the sphere 
 	- use haversine formula
 		- https://en.wikipedia.org/wiki/Haversine_formula?fbclid=IwAR1opVdva9xhRW5JuWO2RMV5_uRwX2M31VJFbRNVZ7Yx81nRF2z6-Ngz254
@@ -114,17 +121,18 @@ function d
 	INPUTS:
 	- p₁: first point of the form (ψ,λ)
 	- p₂: second point of the form (ψ,λ)
+	- r: radius of the sphere
 
 	OUTPUTS:
 	- dist: distance between the two points
 """
-function d(p₁::Array{Real,1}, p₂::Array{Real,1})
+function d(p₁::Array{Real,1}, p₂::Array{Real,1}, r::Real)
 	d = 0 # Fill in!
 	return d
 end
 
 """
-function compute_centroid
+function compute_centroid - Keiko
 	- compute the centroid of a Voronoi region based on its points
 
 	INPUTS:

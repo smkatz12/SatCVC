@@ -8,6 +8,10 @@ General notes:
 λ defines azimuth (defined like longitude ranging from -180 to 180 degrees)
 - defined like lat and lon so that we can use haversine formula as distance function
 
+xyz coordinate system centered at center of sphere
+- x is 0 when longitude is zero
+
+
 Here is how we are going to define our object:
 - It is a rectangular prism centered at (0,0)
 - Front face = all x positive, back face = all x negative
@@ -48,7 +52,7 @@ function calcϕ(ψdisc::Array{Real}, λdisc::Array{Real}, l::Real, w::Real, h::R
 			# Figure out which surface normal we care about based on the vector to the origin
 			n = choose_surface_normal(vc, l, w, h)
 			# Fill in ϕ using the dot product (normalize vector to center first)
-			vc_norm = vc./norm(vc)
+			vc_norm = vc./r
 			ϕ[i,j] = abs(dot(vc_norm, n))
 		end
 	end
@@ -56,11 +60,12 @@ function calcϕ(ψdisc::Array{Real}, λdisc::Array{Real}, l::Real, w::Real, h::R
 end
 
 """
-function get_vector_to_center
+function get_vector_to_center - Somrita
 	- calculate the vector from the point on the sphere defined by
 	ψ and λ to the center of the sphere (the origin)
 	- This should just be a matter of getting the cartesian coordinates
 	(careful not typical spherical coord conversion since using lat/lon coord system)
+	- Check that norm is r to test function
 
 	INPUTS:
 	- ψ: latitude
@@ -76,9 +81,10 @@ function get_vector_to_center(ψ::Real, λ::Real, r::Real)
 end
 
 """
-function choose_surface_normal
+function choose_surface_normal - Simon
 	- returns the surface normal of the surface that is being observed
 	from a particular position on the sphere
+	- OUTWARD SURFACE NORMAL
 	- should be the first surface that vc crosses
 
 	INPUTS:
@@ -88,7 +94,7 @@ function choose_surface_normal
 	- h: height of the object
 	
 	OUTPUTS:
-	- n: normal vector to the surface we care about
+	- n: normal vector to the surface we care about (outward)
 """
 function choose_surface_normal(vc::Array{Real,1}, l::Real, w::Real, h::Real)
 	n = [0 0 0] # Fill this in with the correct values!

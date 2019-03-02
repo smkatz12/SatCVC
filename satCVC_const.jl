@@ -1,6 +1,6 @@
 """
 satCVC_const.jl
 - define any constants needed by the simulation here
-(e.g. discretized values of θ and ψ, tolerances, object geometry values, 
+(e.g. discretized values of ψ and λ, tolerances, object geometry values, 
 radius of sphere defining surface, etc.)
 """
