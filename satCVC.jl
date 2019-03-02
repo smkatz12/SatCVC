@@ -148,6 +148,9 @@ function rel_vector - Somrita
 	INPUTS:
 	- CVᵢ: centroid of the voronoi cell for robot i
 	- pᵢ: position of robot i
+
+	OUTPUTS:
+	- rel_vector: vector between centroid and robot position
 """
 function rel_vector(CVᵢ::Array{Real,1}, pᵢ::Array{Real,1})
 	rel_vector = [0 0] # Fill in!
