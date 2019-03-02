@@ -53,7 +53,7 @@ function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{
 			ṗᵢ = k*rel_vector(CVᵢ,p[i,:]) # k*(CVᵢ-p[i,:])
 
 			# Update p
-			pnew[i,:] = p[i,:] + ṗᵢ*dt
+			pnew[i,:] = norm_p(p[i,:] + ṗᵢ*dt)
 		end
 
 		# Check termination
@@ -155,5 +155,21 @@ function rel_vector - Somrita
 function rel_vector(CVᵢ::Array{Real,1}, pᵢ::Array{Real,1})
 	rel_vector = [0 0] # Fill in!
 	return rel_vector
+end
+
+"""
+function norm_p
+	- normalizes p to have a ψ between -90 and 90 and a 
+	λ between -180 and 180
+
+	INPUTS:
+	- p: position vector in the form of (ψ,λ)
+
+	OUTPUTS:
+	- normp: equivalent position vector with ψ and λ in the correct ranges
+"""
+function norm_p(p::Array{Real,1})
+	norm_p = [0 0]
+	return norm_p
 end
 
