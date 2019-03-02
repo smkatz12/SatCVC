@@ -9,7 +9,7 @@ General notes:
 - defined like lat and lon so that we can use haversine formula as distance function
 
 xyz coordinate system centered at center of sphere
-- x is 0 when longitude is zero
+- x is 0 when longitude is 0
 
 
 Here is how we are going to define our object:

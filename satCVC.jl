@@ -70,11 +70,6 @@ function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{
 end
 
 """
-function rel_vector - Somrita
-"""
-
-
-"""
 function compute_voronoi
 	- return all of the discretized points in the voronoi region of Q
 	(according to our geodesic distance function)
@@ -144,5 +139,18 @@ function compute_centroid - Keiko
 function compute_centroid(Vᵢ::Array{Real,2})
 	CVᵢ = [0 0] # Fill in!
 	return CVᵢ
+end
+
+"""
+function rel_vector - Somrita
+	- returns our version of CVᵢ - pᵢ that accounts for angle wrapover to be used in the control law
+
+	INPUTS:
+	- CVᵢ: centroid of the voronoi cell for robot i
+	- pᵢ: position of robot i
+"""
+function rel_vector(CVᵢ::Array{Real,1}, pᵢ::Array{Real,1})
+	rel_vector = [0 0] # Fill in!
+	return rel_vector
 end
 
