@@ -106,6 +106,18 @@ function choose_surface_normal - Simon
 	- n: normal vector to the surface we care about (outward)
 """
 function choose_surface_normal(vc::Array{Real,1}, l::Real, w::Real, h::Real)
+	#flip vector to get outward vector from center
+
+	r = -vc/norm(vc)
+	dist2plane = [0 0 0 0 0 0] #distance to 6 planes +z, -z, +x, -x, +y, -y
+	# planes have equations of form ax+by+cz+d=0
+	# z plane distances
+	a = 0
+	b = 0
+	c = 1
+	d = -c*h/2;
+	dist = -d/(a*r[1]+b*r[2]+c*r[3])
+	
 	n = [0 0 0] # Fill this in with the correct values!
 	return n
 end
