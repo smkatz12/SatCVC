@@ -14,7 +14,7 @@ function simulate_cvc
 	- ******* A note on the compute_voronoi function:
 		- If this were truly distributed, its input would be only the positions of its neighbors
 		- We are not losing generality when we just input all positions because
-		the positions any robots that are not neighbors will be irrelavent in the calculation
+		the positions any robots that are not neighbors will be irrelevant in the calculation
 	- TODO: Add functionality to keep track of p on each iteration in a 3D array so that we can plot
 	their entire trajectories instead of just final position
 	- Anything after the semicolon is an optional input with a default value
@@ -32,7 +32,7 @@ function simulate_cvc
 	- dt: time step
 
 	OUTPUTS:
-	- p: final position of the robots (set up the same as p0) 
+	- p: final position of the robots (set up the same as p0)
 """
 function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{Real,1}, k::Real, r::Real;
 	max_iter = 100, tol = 0.1, dt = 0.1)
@@ -48,7 +48,7 @@ function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{
 		for i = 1:size(p,1)
 			# Next compute the centroid
 			CVᵢ = compute_centroid(V[i])
-			
+
 			# Find ṗᵢ
 			ṗᵢ = k*rel_vector(CVᵢ,p[i,:]) # k*(CVᵢ-p[i,:])
 
@@ -109,7 +109,7 @@ end
 
 """
 function d - Keiko
-	- computes distance between two points on the sphere 
+	- computes distance between two points on the sphere
 	- use haversine formula
 		- https://en.wikipedia.org/wiki/Haversine_formula?fbclid=IwAR1opVdva9xhRW5JuWO2RMV5_uRwX2M31VJFbRNVZ7Yx81nRF2z6-Ngz254
 
@@ -150,16 +150,27 @@ function rel_vector - Somrita
 	- pᵢ: position of robot i
 
 	OUTPUTS:
-	- rel_vector: vector between centroid and robot position
+	- rel_vector: vector from robot position to centroid
 """
-function rel_vector(CVᵢ::Array{Real,1}, pᵢ::Array{Real,1})
-	rel_vector = [0 0] # Fill in!
+function rel_vector(CVᵢ::Array{Float64,1}, pᵢ::Array{Float64,1})
+	latDiff = CVᵢ[1] -  pᵢ[1]
+	longDiff = CVᵢ[2] - pᵢ[2]
+	longDiffCorr = longDiff
+	if longDiff > 180
+		longDiffCorr = longDiff - 360
+	elseif longDiff < -180
+		longDiffCorr = longDiff + 360
+	end
+	# e.g. to get from -175 degrees to 175 degrees, you can either go 175-(-175)=350 degrees or the equivalent -(360-(175-(-175)))=-10 degrees
+	rel_vector = [latDiff longDiffCorr]
 	return rel_vector
+	# Tests:
+	# rel_vector([89.0,175],[-89.0,-175])
 end
 
 """
 function norm_p
-	- normalizes p to have a ψ between -90 and 90 and a 
+	- normalizes p to have a ψ between -90 and 90 and a
 	λ between -180 and 180
 
 	INPUTS:
@@ -172,4 +183,3 @@ function norm_p(p::Array{Real,1})
 	norm_p = [0 0]
 	return norm_p
 end
-

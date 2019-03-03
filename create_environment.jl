@@ -10,6 +10,7 @@ General notes:
 
 xyz coordinate system centered at center of sphere
 - x is 0 when longitude is 0
+- x pointing to 0°N,0°E, y pointing to 0°N,90°E, and z pointing to 90°N
 
 
 Here is how we are going to define our object:
@@ -17,16 +18,16 @@ Here is how we are going to define our object:
 - Front face = all x positive, back face = all x negative
 - Right face = all y positive, left face = all y negative
 - Top face = all z positive, bottom face = all z negative
-- All vectors specifying parameters will then be in order of 
+- All vectors specifying parameters will then be in order of
 [Front, back, right, left, top, bottom]
-- To fully specify our geometry we just need the length (corresponds to y-direction), 
+- To fully specify our geometry we just need the length (corresponds to y-direction),
 width (corresponds to x-direction), and height (corresponds to z-direction)
 """
 
 """
 function calcϕ
-	- Calculate the sensory function at each point in the discretized 
-	space based on the object geometry (assuming some form of rectangular 
+	- Calculate the sensory function at each point in the discretized
+	space based on the object geometry (assuming some form of rectangular
 	prism for now)
 
 	INPUTS:
@@ -71,13 +72,21 @@ function get_vector_to_center - Somrita
 	- ψ: latitude
 	- λ: longitude
 	- r: radius of the sphere
-	
+
 	OUTPUTS:
 	- vc: vector to the origin
 """
 function get_vector_to_center(ψ::Real, λ::Real, r::Real)
-	vc = [0 0 0] # Fill this in with the correct values!
+	# Formula from https://www.movable-type.co.uk/scripts/latlong-vectors.html
+	vc = r*[cosd(ψ)*cosd(λ) cosd(ψ)*sind(λ) sind(ψ)]
 	return vc
+	# Tests:
+	# get_vector_to_center(0,0,5)
+	# get_vector_to_center(0,90,5)
+	# get_vector_to_center(0,180,5)
+	# get_vector_to_center(0,-179,5)
+	# get_vector_to_center(45,90,5)
+	# get_vector_to_center(45,0,5)
 end
 
 """
@@ -92,7 +101,7 @@ function choose_surface_normal - Simon
 	- l: length of the object
 	- w: width of the object
 	- h: height of the object
-	
+
 	OUTPUTS:
 	- n: normal vector to the surface we care about (outward)
 """
