@@ -110,6 +110,7 @@ function choose_surface_normal(vc::Array{Real,1}, l::Real, w::Real, h::Real)
 
 	r = -vc/norm(vc)
 	dist2plane = [0 0 0 0 0 0] #distance to 6 planes +z, -z, +x, -x, +y, -y
+	normals = [0 0 1;0 0 -1;1 0 0;-1 0 0;0 1 0;0 -1 0]
 	# planes have equations of form ax+by+cz+d=0
 	# z plane distances
 	a = 0
@@ -117,7 +118,49 @@ function choose_surface_normal(vc::Array{Real,1}, l::Real, w::Real, h::Real)
 	c = 1
 	d = -c*h/2;
 	dist = -d/(a*r[1]+b*r[2]+c*r[3])
-	
-	n = [0 0 0] # Fill this in with the correct values!
+	if dist>0
+		dist2plane[1] = dist
+		dist2plane[2] = dist + 2 #opposite plane distance adds penalty, not a minimum
+	else
+		dist2plane[2] = -dist
+		dist2plane[1] = -dist + 2 #opposite plane distance adds penalty, not a minimum
+	end
+
+	# x plane distances
+	a = 1
+	b = 0
+	c = 0
+	d = -a*l/2
+	dist = -d/(a*r[1]+b*r[2]+c*r[3])
+	if dist>0
+		dist2plane[3] = dist
+		dist2plane[5] = dist + 2 #opposite plane distance adds penalty, not a minimum
+	else
+		dist2plane[5] = -dist
+		dist2plane[3] = -dist + 2 #opposite plane distance adds penalty, not a minimum
+	end
+
+	# y plane distances
+	a = 0
+	b = 1
+	c = 0
+	d = -b*w/2
+	dist = -d/(a*r[1]+b*r[2]+c*r[3])
+	if dist>0
+		dist2plane[4] = dist
+		dist2plane[6] = dist + 2 #opposite plane distance adds penalty, not a minimum
+	else
+		dist2plane[6] = -dist
+		dist2plane[4] = -dist + 2 #opposite plane distance adds penalty, not a minimum
+	end
+
+	min_dist = dist2plane[1]
+	n = [0 0 1]
+
+	for i in 1:1:6
+		if dist2plane[i]<min_dist
+			min_dist = dist2plane[i]
+			n = normals[i:i,1:3]
+		end
 	return n
 end
