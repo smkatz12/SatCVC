@@ -10,7 +10,7 @@ General notes:
 
 xyz coordinate system centered at center of sphere
 - x is 0 when longitude is 0
-- x pointing to 0°N,0°E, y pointing to 0°N,90°E, and z pointing to 90°N
+sa- x pointing to 0°N,0°E, y pointing to 0°N,90°E, and z pointing to 90°N
 
 
 Here is how we are going to define our object:
@@ -43,9 +43,9 @@ function calcϕ
 	ψ varies in the rows while λ varies in the columns
 	(e.g. ϕ[1,2] is ϕ of the first discretized value of ψ and the second discretized value of λ)
 """
-function calcϕ(ψdisc::Array{Real}, λdisc::Array{Real}, l::Real, w::Real, h::Real, r::Real)
+function calcϕ(ψdisc::Array{Float64}, λdisc::Array{Float64}, l::Float64, w::Float64, h::Float64, r::Float64)
 	# Initialize ϕ
-	ϕ = zeros(length(ψdisc),length(θdisc))
+	ϕ = zeros(length(ψdisc),length(λdisc))
 	for i = 1:length(ψdisc)
 		for j = 1:length(λdisc)
 			# Get vector from point on sphere to center (the origin) in intertial cartesian coordinates
@@ -76,7 +76,7 @@ function get_vector_to_center - Somrita
 	OUTPUTS:
 	- vc: vector to the origin
 """
-function get_vector_to_center(ψ::Real, λ::Real, r::Real)
+function get_vector_to_center(ψ::Float64, λ::Float64, r::Float64)
 	# Formula from https://www.movable-type.co.uk/scripts/latlong-vectors.html
 	vc = r*[cosd(ψ)*cosd(λ) cosd(ψ)*sind(λ) sind(ψ)]
 	return vc

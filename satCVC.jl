@@ -8,6 +8,12 @@ Angle wrapover in the control law (this is going to be super weird when it happe
 and can probably cause some undesired behavior of the system)
 """
 
+using Distances
+using LinearAlgebra
+
+include("create_environment.jl")
+include("satCVC_const.jl")
+
 """
 function simulate_cvc
 	- main function to simulate satellite coverage
@@ -34,7 +40,7 @@ function simulate_cvc
 	OUTPUTS:
 	- p: final position of the robots (set up the same as p0)
 """
-function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{Real,1}, k::Real, r::Real;
+function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::Array{Float64,1}, k::Float64, r::Float64;
 	max_iter = 100, tol = 0.1, dt = 0.1)
 	p = p₀
 	for j = 1:max_iter # Using j so that I can use i for the robots (sorry this is backwards)
@@ -47,13 +53,14 @@ function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{
 		# Iterate though each robot
 		for i = 1:size(p,1)
 			# Next compute the centroid
-			CVᵢ = compute_centroid(V[i])
+			CVᵢ = compute_centroid(V[i], ϕ)
+			println(CVᵢ)
 
 			# Find ṗᵢ
 			ṗᵢ = k*rel_vector(CVᵢ,p[i,:]) # k*(CVᵢ-p[i,:])
 
 			# Update p
-			pnew[i,:] = norm_p(p[i,:] + ṗᵢ*dt)
+			pnew[i,:] = norm_p(p[i,:] + vec(ṗᵢ*dt))
 		end
 
 		# Check termination
@@ -62,7 +69,9 @@ function simulate_cvc(p₀::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{
 		end
 
 		# Set up for next iteration
-		p = p_new
+		p = pnew
+
+		println(p)
 	end
 
 	println("Hit maximum iterations before converging :(. Returning final position anyway ...")
@@ -84,8 +93,8 @@ function compute_voronoi
 	OUTPUTS:
 	- V: Dictionary mapping robot index to array of points in Voronoi region
 """
-function compute_voronoi(p::Array{Real,2}, ψdisc::Array{Real,1}, λdisc::Array{Real,1}, r::Real)
-	V = Dict{Int64,Array{Real,2}}()
+function compute_voronoi(p::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::Array{Float64,1}, r::Float64)
+	V = Dict{Int64,Array{Float64,2}}()
 	for i = 1:length(ψdisc)
 		for j = 1:length(λdisc)
 			min_dist = Inf
@@ -121,8 +130,8 @@ function d - Keiko
 	OUTPUTS:
 	- dist: distance between the two points
 """
-function d(p₁::Array{Real,1}, p₂::Array{Real,1}, r::Real)
-	d = 0 # Fill in!
+function d(p₁::Array{Float64,1}, p₂::Array{Float64,1}, r::Float64)
+	d = haversine(p₁,p₂,r)
 	return d
 end
 
@@ -136,8 +145,23 @@ function compute_centroid - Keiko
 	OUTPUTS:
 	- CVᵢ: Centroid of the Voronoi region in the form (ψ,λ)
 """
-function compute_centroid(Vᵢ::Array{Real,2})
-	CVᵢ = [0 0] # Fill in!
+function compute_centroid(Vᵢ::Array{Float64,2}, ϕ::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::Array{Float64,1})
+	#ϕ = [2 1 2; 1 2 1; 2 1 2] #test
+	num_q_in_voronoi_cell = size(Vᵢ)[1]
+	CVᵢ_num = [0;0]
+	CVᵢ_den = 0
+
+	for k = 1:num_q_in_voronoi_cell
+		q = [Vᵢ[k,1]; Vᵢ[k,2]]
+		ψind = findfirst(ψdisc.==q[1])
+		λind = findfirst(λdisc.==q[2])
+		CVᵢ_num = CVᵢ_num + q*ϕ[ψind,λind]
+		CVᵢ_den = CVᵢ_den + ϕ[ψind,λind]
+	end
+
+	CVᵢ = CVᵢ_num./CVᵢ_den # Fill in!
+	println(CVᵢ_num)
+	println(CVᵢ_den)
 	return CVᵢ
 end
 
@@ -179,7 +203,24 @@ function norm_p
 	OUTPUTS:
 	- normp: equivalent position vector with ψ and λ in the correct ranges
 """
-function norm_p(p::Array{Real,1})
-	norm_p = [0 0]
+function norm_p(p::Array{Float64,1})
+	norm_p = p
+
+	if norm_p[1] < -90
+		norm_p[1] = -(norm_p[1]+180)
+		norm_p[2] = norm_p[2] + 180
+	end
+	if norm_p[1] > 90
+		norm_p[1] = -(norm_p[1]-180)
+		norm_p[2] = norm_p[2] + 180
+	end
+
+	while norm_p[2] < -180
+		norm_p[2] += 360
+	end
+	while norm_p[2] > 180
+		norm_p[2] -= 360
+	end
+
 	return norm_p
 end
