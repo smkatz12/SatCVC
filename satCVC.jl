@@ -155,6 +155,8 @@ function compute_centroid(Vᵢ::Array{Float64,2}, ϕ::Array{Float64,2}, ψdisc::
 		q = [Vᵢ[k,1]; Vᵢ[k,2]]
 		ψind = findfirst(ψdisc.==q[1])
 		λind = findfirst(λdisc.==q[2])
+		ϕ₋wt = ϕ[ψind,λind]
+		q_XYZ =
 		CVᵢ_num = CVᵢ_num + q*ϕ[ψind,λind]
 		CVᵢ_den = CVᵢ_den + ϕ[ψind,λind]
 	end
@@ -164,6 +166,18 @@ function compute_centroid(Vᵢ::Array{Float64,2}, ϕ::Array{Float64,2}, ψdisc::
 	println(CVᵢ_den)
 	return CVᵢ
 end
+
+function convertToXYZ()
+	X = cosd(lat) * cosd(lon)
+	Y = cosd(lat) * sind(lon)
+	Z = sind(lat)
+	return X,Y,Z
+
+function convertToLatLongHyp()
+	Lon = rad2deg(atan2(y, x))
+	Hyp = sqrt(x * x + y * y)
+	Lat = rad2deg(atan2(z, hyp))
+	return Lat, Long
 
 """
 function rel_vector - Somrita
