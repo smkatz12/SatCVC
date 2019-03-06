@@ -6,7 +6,8 @@ radius of sphere defining surface, etc.)
 """
 
 ψdisc = collect(-90.0:1:90.0)
-λdisc = collect(-180.0:1:180.0)
+λdisc = collect(-180.0:1:179.0)
+λpartitions = length(λdisc)*ones(length(ψdisc))
 
 r = 100.0
 
