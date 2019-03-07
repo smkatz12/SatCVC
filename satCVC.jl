@@ -40,7 +40,7 @@ function simulate_cvc
 	OUTPUTS:
 	- p: final position of the robots (set up the same as p0)
 """
-function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::Array{Float64,1}, k::Float64, r::Float64;
+function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::Array{Float64,1}, k::Float64, r::Float64, areas;
 	max_iter = 100, tol = 0.1, dt = 0.1)
 	p = p₀
 	for j = 1:max_iter # Using j so that I can use i for the robots (sorry this is backwards)
@@ -56,9 +56,7 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 			# if i == 1
 			# 	println(findall(V[i][:,1].>0))
 			# end
-			println(V[i])
-			CVᵢ = compute_centroid(V[i], ϕ, ψdisc, λdisc)
-			println(CVᵢ)
+			CVᵢ = compute_centroid(V[i], ϕ, ψdisc, λdisc, areas)
 
 			# Find ṗᵢ
 			ṗᵢ = k*rel_vector(CVᵢ,p[i,:]) # k*(CVᵢ-p[i,:])
@@ -75,7 +73,7 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 		# Set up for next iteration
 		p = pnew
 
-		println(j)
+		println(p)
 	end
 
 	println("Hit maximum iterations before converging :(. Returning final position anyway ...")
@@ -151,37 +149,43 @@ function compute_centroid - Keiko
 	OUTPUTS:
 	- CVᵢ: Centroid of the Voronoi region in the form (ψ,λ)
 """
-function compute_centroid(Vᵢ::Array{Float64,2}, ϕ::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::Array{Float64,1})
+function compute_centroid(Vᵢ::Array{Float64,2}, ϕ::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::Array{Float64,1}, areas)
 	#ϕ = [2 1 2; 1 2 1; 2 1 2] #test
 	num_q_in_voronoi_cell = size(Vᵢ)[1]
-	CVᵢ_num = [0;0]
+	CVᵢ_num_XYZ = [0;0;0]
 	CVᵢ_den = 0
 
 	for k = 1:num_q_in_voronoi_cell
 		q = [Vᵢ[k,1]; Vᵢ[k,2]]
 		ψind = findfirst(ψdisc.==q[1])
 		λind = findfirst(λdisc.==q[2])
-		ϕ₋wt = ϕ[ψind,λind]
-		q_XYZ =
-		CVᵢ_num = CVᵢ_num + q*ϕ[ψind,λind]
-		CVᵢ_den = CVᵢ_den + ϕ[ψind,λind]
+		q_XYZ = convertToXYZ(ψdisc[ψind], λdisc[λind])
+		CVᵢ_num_XYZ = CVᵢ_num_XYZ + q_XYZ*ϕ[ψind,λind]*areas[ψind]
+		CVᵢ_den = CVᵢ_den + ϕ[ψind,λind]*areas[ψind]
 	end
 
-	CVᵢ = CVᵢ_num./CVᵢ_den # Fill in!
+	CVᵢ_num = convertToLatLon(CVᵢ_num_XYZ[1], CVᵢ_num_XYZ[2], CVᵢ_num_XYZ[3])
+
+	CVᵢ_XYZ = CVᵢ_num_XYZ./CVᵢ_den # Fill in!
+
+	CVᵢ = convertToLatLon(CVᵢ_XYZ[1], CVᵢ_XYZ[2], CVᵢ_XYZ[3])
+	println("final: $CVᵢ")
 	return CVᵢ
 end
 
-function convertToXYZ()
+function convertToXYZ(lat, lon)
 	X = cosd(lat) * cosd(lon)
 	Y = cosd(lat) * sind(lon)
 	Z = sind(lat)
-	return X,Y,Z
+	return [X,Y,Z]
+end
 
-function convertToLatLongHyp()
-	Lon = rad2deg(atan2(y, x))
+function convertToLatLon(x, y, z)
+	Lon = atand(y, x)
 	Hyp = sqrt(x * x + y * y)
-	Lat = rad2deg(atan2(z, hyp))
-	return Lat, Long
+	Lat = atand(z, Hyp)
+	return [Lat,Lon]
+end
 
 """
 function rel_vector - Somrita
@@ -242,3 +246,8 @@ function norm_p(p::Array{Float64,1})
 
 	return norm_p
 end
+
+# Run everything
+ϕ = calcϕ(ψdisc, λdisc, l, w, h, r);
+areas = get_areas(ψdisc, λpartitions, r);
+p = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 20)
