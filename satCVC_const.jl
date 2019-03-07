@@ -5,9 +5,12 @@ satCVC_const.jl
 radius of sphere defining surface, etc.)
 """
 
-ψdisc = collect(-90.0:1:90.0)
-λdisc = collect(-180.0:1:179.0)
-λpartitions = length(λdisc)*ones(length(ψdisc))
+# ψdisc = collect(-90.0:1:90.0)
+# λdisc = collect(-180.0:1:180.0)
+
+ψdisc = collect(-90.0:30:90.0)
+λdisc = collect(-180.0:30:180.0)
+
 
 r = 100.0
 
@@ -17,4 +20,4 @@ h = 20.0
 
 k = 1.0
 
-p₀ = [-90.0 0.0; 90.0 0.0]
+p₀ = [90.0 0.0; -90.0 0.0]

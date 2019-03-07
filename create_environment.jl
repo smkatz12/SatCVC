@@ -49,7 +49,7 @@ function calcϕ(ψdisc::Array{Float64}, λdisc::Array{Float64}, l::Float64, w::F
 	for i = 1:length(ψdisc)
 		for j = 1:length(λdisc)
 			# Get vector from point on sphere to center (the origin) in intertial cartesian coordinates
-			vc = get_vector_to_center(ψdisc[i], λdisc[i], r)
+			vc = get_vector_to_center(ψdisc[i], λdisc[j], r)
 			# Figure out which surface normal we care about based on the vector to the origin
 			n = choose_surface_normal(vc, l, w, h)
 			# Fill in ϕ using the dot product (normalize vector to center first)
@@ -78,7 +78,7 @@ function get_vector_to_center - Somrita
 """
 function get_vector_to_center(ψ::Float64, λ::Float64, r::Float64)
 	# Formula from https://www.movable-type.co.uk/scripts/latlong-vectors.html
-	vc = r*[cosd(ψ)*cosd(λ) cosd(ψ)*sind(λ) sind(ψ)]
+	vc = -r*[cosd(ψ)*cosd(λ) cosd(ψ)*sind(λ) sind(ψ)]
 	return vc
 	# Tests:
 	# get_vector_to_center(0,0,5)
@@ -164,84 +164,4 @@ function choose_surface_normal(vc::Array{Float64,2}, l::Float64, w::Float64, h::
 		end
 	end
 	return n
-end
-
-
-"""
-function get_areas
-	- Calculate the area on the surface of the sphere associated with each point in the angle mesh
-
-	INPUTS:
-	- ψdisc: discretized ψ points
-	- λpartitions: array of size equal to length(ψdisc), each index represents the number of equal longitude partitions
-	at that latitutde
-	- r: radius of the sphere to place the satellites on
-
-	OUTOUTS:
-	- areas: matrix that constains an area for each (ψ,λ)
-	ψ varies in the rows while λ varies in the columns
-	(e.g. areas[1,2] is surface area around the point on sphere with angles given by 
-	first discretized value of ψ and the second discretized value of λ)
-"""
-function get_areas(ψdisc::Array{Float64}, λpartitions::Array{Float64}, r::Float64)
-	# Initialize areas
-	areas = zeros(length(ψdisc))
-	for i = 1:length(ψdisc)
-		
-		# special consideration for first latitude (closest to -90)
-		if i == 1
-			#special consideration for first latitude, nearest to south pole
-			if ψdisc[i] == -90
-				#if first latitude is -90, get area of the circle surrounding south pole
-				#find latitude change required to get half way to next latitude
-				dlat = abs(ψdisc[i+1]-ψdisc[i])/2
-				radius = 2*pi*r*dlat/360 	#radius is the arlength based on dlat
-				areas[i] = pi*radius^2/λpartitions[i]		#divide area by number of times south pole will be added in integral
-			else
-				#if first latitude is not -90, get sector area of circle surrounding south pole
-				#find latitude from -90 corresponding to half way to next latitude
-				dlat = 90-abs(ψdisc[i+1]+ψdisc[i])/2
-				radius = 2*pi*r*dlat/360	#radius is arclength based on dlat
-				areas[i] = pi*radius^2/λpartitions[i] 	#divide into equal sectors based on partitions at this latitude
-			end
-		elseif i == length(ψdisc)
-			#special consideration for last latitude nearest to north pole
-			if ψdisc[i] == 90
-				#if last latitude is 90, get area of the circle surrounding north pole
-				#find latitude change required to get half way to previous latitude
-				dlat = abs(ψdisc[i]-ψdisc[i-1])/2
-				radius = 2*pi*r*dlat/360 	#radius is the arlength based on dlat
-				areas[i] = pi*radius^2/λpartitions[i]		#divide area by number of times south pole will be added in integral
-			else
-				#if first latitude is not 90, get sector area of circle surrounding north pole
-				#find latitude from 90 corresponding to half way to next latitude
-				dlat = 90-abs(ψdisc[i]+ψdisc[i-1])/2
-				radius = 2*pi*r*dlat/360	#radius is arclength based on dlat
-				areas[i] = pi*radius^2/λpartitions[i] 	#divide into equal sectors based on partitions at this latitude
-			end
-
-		else
-			#all other latitudes between first and last latitude
-			#approximate each area by a trapezoid.
-			#trapezoid top length is circumference of middle of next latitude and current latitude, divide by partitions
-			lat_top = (ψdisc[i+1]+ψdisc[i])/2
-			radius_top = r*cosd(abs(lat_top))	#get radius of level curve (lol) of top latitude
-			length_top = 2*radius_top*pi/λpartitions[i] 	#length of top edge of trapezoid
-
-			#trapezoid bottom length is circuference of middle of previous latitude and current latitude, divide by partitions
-			lat_bot = (ψdisc[i]+ψdisc[i-1])/2
-			radius_bot = r*cosd(abs(lat_bot))	#get radius of level curve (lol) of bot latitude
-			length_bot = 2*radius_bot*pi/λpartitions[i] 	#length of bot edge of trapezoid
-
-			#height of trapezoid is arclength between top and bottom latitude
-			dlat = abs(lat_top-lat_bot)
-			height = 2*pi*r*dlat/360
-
-			areas[i] = (length_top+length_bot)/2*height
-
-		end
-		
-		
-	end
-	return areas
 end

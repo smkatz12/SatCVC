@@ -53,7 +53,11 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 		# Iterate though each robot
 		for i = 1:size(p,1)
 			# Next compute the centroid
-			CVᵢ = compute_centroid(V[i], ϕ)
+			# if i == 1
+			# 	println(findall(V[i][:,1].>0))
+			# end
+			println(V[i])
+			CVᵢ = compute_centroid(V[i], ϕ, ψdisc, λdisc)
 			println(CVᵢ)
 
 			# Find ṗᵢ
@@ -71,7 +75,7 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 		# Set up for next iteration
 		p = pnew
 
-		println(p)
+		println(j)
 	end
 
 	println("Hit maximum iterations before converging :(. Returning final position anyway ...")
@@ -131,7 +135,9 @@ function d - Keiko
 	- dist: distance between the two points
 """
 function d(p₁::Array{Float64,1}, p₂::Array{Float64,1}, r::Float64)
-	d = haversine(p₁,p₂,r)
+	x = [p₁[2], p₁[1]]
+	y = [p₂[2], p₂[1]]
+	d = abs(haversine(x,y,r))
 	return d
 end
 
@@ -162,8 +168,6 @@ function compute_centroid(Vᵢ::Array{Float64,2}, ϕ::Array{Float64,2}, ψdisc::
 	end
 
 	CVᵢ = CVᵢ_num./CVᵢ_den # Fill in!
-	println(CVᵢ_num)
-	println(CVᵢ_den)
 	return CVᵢ
 end
 
