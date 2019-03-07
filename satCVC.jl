@@ -76,6 +76,7 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 
 		println(p)
 
+		println("position of robots:",p)
 	end
 
 	println("Hit maximum iterations before converging :(. Returning final position anyway ...")
