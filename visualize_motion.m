@@ -3,6 +3,7 @@ close all
 
 data = xlsread('Positions.csv');
 n = 6; %number of robots
+dt = 0.1;
 [length, width] = size(data);
 timesteps = length/n; %number of timesteps
 for i=1:1:timesteps
@@ -22,4 +23,59 @@ for i=1:1:timesteps
     
     
 end
+
+%Animation
+f = figure('Color', [1 1 1 1], 'Position', [403 176 698 490])
+%% make cube
+xc=0; yc=0; zc=0;    % coordinated of the center
+L=0.6;                 % cube size (length of an edge)
+alpha=0.3;           % transparency (max=1=opaque)
+X = [0 0 0 0 0 1; 1 0 1 1 1 1; 1 0 1 1 1 1; 0 0 0 0 0 1];
+Y = [0 0 0 0 1 0; 0 1 0 0 1 1; 0 1 1 1 1 1; 0 0 1 1 1 0];
+Z = [0 0 1 0 0 0; 0 0 1 0 0 0; 1 1 1 0 1 1; 1 1 1 0 1 1];
+C='blue';                  % unicolor
+X = L*(X-0.5) + xc;
+Y = L*(Y-0.5) + yc;
+Z = L*(Z-0.5) + zc; 
+
+%%
+set(f, 'doublebuffer', 'on');
+max_t = timesteps; %Find end time
+t = 0;  %Set movie time to 0
+i = 1;  %Set index of array to start
+pause(1);
+
+v = VideoWriter('Space_Force_One.avi');
+v.FrameRate = 1/0.1;
+
+while i<=timesteps
+    %Every dt seconds, show position of robots
+    %frame
+    
+    for j=1:1:n
+        % add robots of this timeframe
+        plot3(trajectory_XYZ(j,i*3-2),trajectory_XYZ(j,i*3-1),trajectory_XYZ(j,i*3), 'o')  
+        if j ==1
+            hold on
+        end
+    end
+    fill3(X,Y,Z,C,'FaceAlpha',alpha) %add cube
+    hold off
+    axis equal
+    axis([-1.2, 1.2, -1.2, 1.2, -1.2, 1.2])
+    
+    xlabel('x axis')
+    ylabel('y axis')
+    title(strcat('Time = ', num2str(t,2),' seconds'))
+    grid minor
+    drawnow;
+    M(i) = getframe(1);
+    pause(0.1)
+    t = t+dt;
+    i=i+1;
+end
+
+open(v);
+writeVideo(v,M);
+close(v)
 
