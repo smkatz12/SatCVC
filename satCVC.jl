@@ -46,6 +46,7 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 	p = p₀
 	numRobots = size(p,1)
 	positions = Array{Float64}(undef, 0, 2)
+	positions=vcat(positions,p)
 	for j = 1:max_iter # Using j so that I can use i for the robots (sorry this is backwards)
 		# Initialize vector to fill with new positions
 		pnew = zeros(size(p₀))
@@ -70,7 +71,7 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 
 		# Check termination
 		if norm(pnew - p) < tol
-			return p
+			return p, positions
 		end
 
 		# Set up for next iteration
@@ -254,8 +255,11 @@ end
 # Run everything
 ϕ = calcϕ(ψdisc, λdisc, l, w, h, r);
 areas = get_areas(ψdisc, λpartitions, r);
-p, positions = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 2, tol = 0.4);
-p
+p, positions = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 100, tol = 0.5);
 println("Saving all timesteps positions to file")
+println(positions)
+
 df = convert(DataFrame, positions)
 CSV.write("positions.csv", df, writeheader=false);
+
+
