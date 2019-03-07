@@ -10,6 +10,7 @@ and can probably cause some undesired behavior of the system)
 
 using Distances
 using LinearAlgebra
+using CSV, DataFrames
 
 include("create_environment.jl")
 include("satCVC_const.jl")
@@ -43,6 +44,8 @@ function simulate_cvc
 function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::Array{Float64,1}, k::Float64, r::Float64, areas;
 	max_iter = 100, tol = 1, dt = 0.1)
 	p = p₀
+	numRobots = size(p,1)
+	positions = Array{Float64}(undef, 0, 2)
 	for j = 1:max_iter # Using j so that I can use i for the robots (sorry this is backwards)
 		# Initialize vector to fill with new positions
 		pnew = zeros(size(p₀))
@@ -51,7 +54,7 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 		V = compute_voronoi(p, ψdisc, λdisc, r)
 
 		# Iterate though each robot
-		for i = 1:size(p,1)
+		for i = 1:numRobots
 			# Next compute the centroid
 			# if i == 1
 			# 	println(findall(V[i][:,1].>0))
@@ -73,14 +76,12 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 		# Set up for next iteration
 		println("norm:", norm(pnew-p))
 		p = pnew
-
-		println(p)
-
 		println("position of robots:",p)
+		positions=vcat(positions,pnew)
 	end
 
 	println("Hit maximum iterations before converging :(. Returning final position anyway ...")
-	return p
+	return p, positions
 end
 
 """
@@ -172,7 +173,7 @@ function compute_centroid(Vᵢ::Array{Float64,2}, ϕ::Array{Float64,2}, ψdisc::
 	CVᵢ_XYZ = CVᵢ_num_XYZ./CVᵢ_den # Fill in!
 
 	CVᵢ = convertToLatLon(CVᵢ_XYZ[1], CVᵢ_XYZ[2], CVᵢ_XYZ[3])
-	println("final: $CVᵢ")
+	println("centroid: $CVᵢ")
 	return CVᵢ
 end
 
@@ -253,4 +254,8 @@ end
 # Run everything
 ϕ = calcϕ(ψdisc, λdisc, l, w, h, r);
 areas = get_areas(ψdisc, λpartitions, r);
-p = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 100, tol = 0.4)
+p, positions = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 2, tol = 0.4);
+p
+println("Saving all timesteps positions to file")
+df = convert(DataFrame, positions)
+CSV.write("positions.csv", df, writeheader=false);
