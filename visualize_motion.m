@@ -38,6 +38,15 @@ X = L*(X-0.5) + xc;
 Y = L*(Y-0.5) + yc;
 Z = L*(Z-0.5) + zc; 
 
+%% make circle equator and prime meridians
+r_circle=1;
+teta=-pi:0.01:pi;
+x_equator=r_circle*cos(teta);
+y_equator=r_circle*sin(teta);
+x_meridian=r_circle*cos(teta);
+z_meridian=r_circle*sin(teta);
+
+
 %%
 set(f, 'doublebuffer', 'on');
 max_t = timesteps; %Find end time
@@ -54,16 +63,18 @@ while i<=timesteps
     
     for j=1:1:n
         % add robots of this timeframe
-        plot3(trajectory_XYZ(j,i*3-2),trajectory_XYZ(j,i*3-1),trajectory_XYZ(j,i*3), 'o')  
+        plot3(trajectory_XYZ(j,i*3-2),trajectory_XYZ(j,i*3-1),trajectory_XYZ(j,i*3), 'o','MarkerFaceColor',[1 .6 .6])  
         if j ==1
             hold on
         end
     end
     fill3(X,Y,Z,C,'FaceAlpha',alpha) %add cube
+    plot3(x_equator,y_equator,zeros(1,numel(x_equator)))
+    plot3(x_meridian,zeros(1,numel(x_meridian)),z_meridian)
     hold off
     axis equal
     axis([-1.2, 1.2, -1.2, 1.2, -1.2, 1.2])
-    
+    view(280,10)
     xlabel('x axis')
     ylabel('y axis')
     title(strcat('Time = ', num2str(t,2),' seconds'))
