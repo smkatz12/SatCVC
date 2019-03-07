@@ -41,7 +41,7 @@ function simulate_cvc
 	- p: final position of the robots (set up the same as p0)
 """
 function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::Array{Float64,1}, k::Float64, r::Float64, areas;
-	max_iter = 100, tol = 0.1, dt = 0.1)
+	max_iter = 100, tol = 1, dt = 0.1)
 	p = p₀
 	for j = 1:max_iter # Using j so that I can use i for the robots (sorry this is backwards)
 		# Initialize vector to fill with new positions
@@ -71,9 +71,11 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 		end
 
 		# Set up for next iteration
+		println("norm:", norm(pnew-p))
 		p = pnew
 
 		println(p)
+
 	end
 
 	println("Hit maximum iterations before converging :(. Returning final position anyway ...")
@@ -250,4 +252,4 @@ end
 # Run everything
 ϕ = calcϕ(ψdisc, λdisc, l, w, h, r);
 areas = get_areas(ψdisc, λpartitions, r);
-p = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 20)
+p = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 100, tol = 0.4)
