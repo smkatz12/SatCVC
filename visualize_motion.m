@@ -1,15 +1,15 @@
 clear
 close all
 
-data = xlsread('Positions.csv');
-n = 6; %number of robots
+data = csvread('TwoRobotsSamePoint.csv');
+n = 2; %number of robots
 dt = 0.1;
 [length, width] = size(data);
 timesteps = length/n; %number of timesteps
 for i=1:1:timesteps
     %trajectory_angles is an n by 2*timesteps matrix containing time history of
     %all robots
-    current_angles = data(i*6-5:i*6,:);
+    current_angles = data(i*n-(n-1):i*n,:);
     trajectory_angles(1:n,i*2-1:i*2) = current_angles;
     for j=1:1:n
     %get trajectory_XYZ, a n by 3*timestep matrix containing time history
@@ -54,7 +54,7 @@ t = 0;  %Set movie time to 0
 i = 1;  %Set index of array to start
 pause(1);
 
-v = VideoWriter('Space_Force_One.avi');
+v = VideoWriter('TwoRobotsSamePoint.avi');
 v.FrameRate = 1/0.1;
 
 while i<=timesteps

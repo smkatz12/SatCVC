@@ -260,6 +260,6 @@ println("Saving all timesteps positions to file")
 println(positions)
 
 df = convert(DataFrame, positions)
-CSV.write("positions.csv", df, writeheader=false);
+CSV.write(fileName, df, writeheader=false);
 
 
