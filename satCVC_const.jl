@@ -22,5 +22,5 @@ h = 20.0
 k = 4.0
 
 # p₀ = [0.0 0.0; 10.0 10.0; 20.0 20.0; 30.0 30.0; 40.0 40.0; 50.0 50.0]
-fileName = "TwoRobotsSamePoint.csv"
-p₀ = [0.0 0.0; 0.0 180.0]
+fileName = "TwoRobotsEquator.csv"
+p₀ = [0.0 1.0; 0.0 -160.0]
