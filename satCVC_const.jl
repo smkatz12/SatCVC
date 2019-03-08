@@ -1,7 +1,7 @@
 """
 satCVC_const.jl
 - define any constants needed by the simulation here
-(e.g. discretized values of ψ and λ, tolerances, object geometry values, 
+(e.g. discretized values of ψ and λ, tolerances, object geometry values,
 radius of sphere defining surface, etc.)
 """
 
@@ -24,3 +24,11 @@ k = 4.0
 # p₀ = [0.0 0.0; 10.0 10.0; 20.0 20.0; 30.0 30.0; 40.0 40.0; 50.0 50.0]
 fileName = "TwoRobotsEquator.csv"
 p₀ = [0.0 1.0; 0.0 -160.0]
+# fileName = "TwoRobotsSamePoint.csv"
+# p₀ = [0.0 0.0; 0.0 180.0]
+
+fileName = "TwelveRobotsRandom.csv"
+# p₀ = [0.0 0.0; 10.0 10.0; 20.0 20.0; 30.0 30.0; 40.0 40.0; 50.0 50.0]
+lats = 180*rand(12,1) .-90
+longs = 360*rand(12,1) .-180
+p₀ = hcat(lats,longs)
