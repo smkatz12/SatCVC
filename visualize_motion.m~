@@ -1,8 +1,8 @@
 clear
 close all
 
-data = csvread('20RobotsSamePoint.csv');
-n = 20; %number of robots
+data = csvread('TwoRobotsSamePoint.csv');
+n = 2; %number of robots
 dt = 0.1;
 [length, width] = size(data);
 timesteps = length/n; %number of timesteps
@@ -71,9 +71,9 @@ while i<=timesteps
         end
     end
     fill3(X,Y,Z,C,'FaceAlpha',alpha) %add cube
-    plot3(x_equator,y_equator,zeros(1,numel(x_equator)),'b')
-    plot3(x_meridian,zeros(1,numel(x_meridian)),z_meridian,'b')
-    plot3(zeros(1,numel(y_extra)),y_extra,z_extra,'b')
+    plot3(x_equator,y_equator,zeros(1,numel(x_equator)),)
+    plot3(x_meridian,zeros(1,numel(x_meridian)),z_meridian)
+    plot3(zeros(1,numel(y_extra)),y_extra,z_extra)
     hold off
     axis equal
     axis([-1.2, 1.2, -1.2, 1.2, -1.2, 1.2])
