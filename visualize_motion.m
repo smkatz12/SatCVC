@@ -1,8 +1,8 @@
 clear
 close all
 
-data = csvread('TwoRobotsSamePoint.csv');
-n = 2; %number of robots
+data = csvread('20RobotsSamePoint.csv');
+n = 20; %number of robots
 dt = 0.1;
 [length, width] = size(data);
 timesteps = length/n; %number of timesteps
