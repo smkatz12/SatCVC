@@ -12,6 +12,7 @@ using Distances
 using LinearAlgebra
 using CSV, DataFrames
 using PGFPlots
+using JLD
 
 include("create_environment.jl")
 include("satCVC_const.jl")
@@ -291,6 +292,8 @@ println("Saving all timesteps positions to file")
 println(positions)
 
 df = convert(DataFrame, positions)
-CSV.write(fileName, df, writeheader=false)
+CSV.write("$fileName.csv", df, writeheader=false)
+
+JLD.save("$fileName.jld", "positions", positions, "residuals", residuals, "ave_time_per_iter", ave_time_per_iter)
 
 
