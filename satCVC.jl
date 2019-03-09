@@ -11,6 +11,7 @@ and can probably cause some undesired behavior of the system)
 using Distances
 using LinearAlgebra
 using CSV, DataFrames
+using PGFPlots
 
 include("create_environment.jl")
 include("satCVC_const.jl")
@@ -46,8 +47,11 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 	p = p₀
 	numRobots = size(p,1)
 	positions = Array{Float64}(undef, 0, 2)
-	positions=vcat(positions,p)
+	positions = vcat(positions,p)
+	residuals = Vector{Float64}()
+	iter_times = []
 	for j = 1:max_iter # Using j so that I can use i for the robots (sorry this is backwards)
+		start = time()
 		# Initialize vector to fill with new positions
 		pnew = zeros(size(p₀))
 
@@ -57,9 +61,6 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 		# Iterate though each robot
 		for i = 1:numRobots
 			# Next compute the centroid
-			# if i == 1
-			# 	println(findall(V[i][:,1].>0))
-			# end
 			CVᵢ = compute_centroid(V[i], ϕ, ψdisc, λdisc, areas)
 
 			# Find ṗᵢ
@@ -69,20 +70,24 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 			pnew[i,:] = norm_p(p[i,:] + vec(ṗᵢ*dt))
 		end
 
+		push!(iter_times, time() - start)
+
 		# Check termination
-		if norm(pnew - p) < tol
-			return p, positions
+		push!(residuals, norm(pnew - p)/numRobots)
+		if residuals[end] < tol
+			ave_time_per_iter = sum(iter_times)/length(iter_times)
+			return p, positions, residuals, ave_time_per_iter
 		end
 
 		# Set up for next iteration
 		println("norm:", norm(pnew-p))
 		p = pnew
-		println("position of robots:",p)
-		positions=vcat(positions,pnew)
+		println("position of robots:", p)
+		positions = vcat(positions,pnew)
 	end
 
 	println("Hit maximum iterations before converging :(. Returning final position anyway ...")
-	return p, positions
+	return p, positions, residuals, ave_time_per_iter
 end
 
 """
@@ -252,14 +257,40 @@ function norm_p(p::Array{Float64,1})
 	return norm_p
 end
 
+"""
+function plot_residuals
+	- plots the residuals for a simulation and save the output to a .tex and .pdf file
+
+	INPUTS:
+	- residuals: residuals output from the simulation
+	- fileName: name of file to save the plots to (no extension)
+	- title: title for the plot
+"""
+function plot_residuals(residuals::Vector{Float64}, fileName::String, title::String)
+	# Create x values
+	xvalues = collect(1:length(residuals))
+
+	# Create the plot
+	ax = Axis()
+	push!(ax, Plots.Linear(xvalues,residuals))
+	ax.title = title
+	ax.xlabel = "Iteration"
+	ax.ylabel = "Residual"
+
+	save("$fileName.tex", ax)
+	save("$fileName.pdf", ax)
+end
+
+
+
 # Run everything
-ϕ = calcϕ(ψdisc, λdisc, l, w, h, r);
-areas = get_areas(ψdisc, λpartitions, r);
-p, positions = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 100, tol = 0.5);
+ϕ = calcϕ(ψdisc, λdisc, l, w, h, r)
+areas = get_areas(ψdisc, λpartitions, r)
+p, positions, residuals, ave_time_per_iter = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 100, tol = 0.5)
 println("Saving all timesteps positions to file")
 println(positions)
 
 df = convert(DataFrame, positions)
-CSV.write(fileName, df, writeheader=false);
+CSV.write(fileName, df, writeheader=false)
 
 
