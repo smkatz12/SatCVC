@@ -1,7 +1,7 @@
 clear
 close all
 
-data = csvread('20RobotsSamePoint.csv');
+data = csvread('20flat_earth.csv');
 n = 20; %number of robots
 dt = 0.1;
 [length, width] = size(data);
@@ -41,14 +41,20 @@ Z = L*(Z-0.5) + zc;
 %% make circle equator and prime meridians
 r_circle=1;
 teta=-pi:0.01:pi;
+psiRange=-pi:pi/12:pi;
 x_equator=r_circle*cos(teta);
 y_equator=r_circle*sin(teta);
 x_meridian=r_circle*cos(teta);
 z_meridian=r_circle*sin(teta);
 y_extra=r_circle*cos(teta);
 z_extra=r_circle*sin(teta);
-
-
+% x_others=[]
+for j=1:size(psiRange,2)
+    psi=psiRange(j);
+    x_others(j,:) = r_circle*cos(teta)*sin(psi);
+    y_others(j,:) = r_circle*cos(teta)*cos(psi);
+    z_others(j,:) = r_circle*sin(teta);
+end
 %%
 set(f, 'doublebuffer', 'on');
 max_t = timesteps; %Find end time
@@ -56,7 +62,7 @@ t = 0;  %Set movie time to 0
 i = 1;  %Set index of array to start
 pause(1);
 
-v = VideoWriter('TwoRobotsSamePoint.avi');
+v = VideoWriter('20flat_earth.avi');
 v.FrameRate = 1/0.1;
 
 while i<=timesteps
@@ -71,13 +77,16 @@ while i<=timesteps
         end
     end
     fill3(X,Y,Z,C,'FaceAlpha',alpha) %add cube
-    plot3(x_equator,y_equator,zeros(1,numel(x_equator)),'b')
-    plot3(x_meridian,zeros(1,numel(x_meridian)),z_meridian,'b')
-    plot3(zeros(1,numel(y_extra)),y_extra,z_extra,'b')
+    plot3(x_equator,y_equator,zeros(1,numel(x_equator)),':r', 'LineWidth', 0.5)
+    %plot3(x_meridian,zeros(1,numel(x_meridian)),z_meridian,'b')
+    %plot3(zeros(1,numel(y_extra)),y_extra,z_extra,'b')
+    for j=1:size(psiRange,2)
+        plot3(x_others(j,:),y_others(j,:),z_others(j,:),':b','LineWidth',0.5)
+    end
     hold off
     axis equal
     axis([-1.2, 1.2, -1.2, 1.2, -1.2, 1.2])
-    view(280,10)
+    view(3)
     xlabel('x axis')
     ylabel('y axis')
     title(strcat('Time = ', num2str(t,2),' seconds'))

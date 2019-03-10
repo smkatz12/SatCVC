@@ -44,7 +44,7 @@ function simulate_cvc
 	- p: final position of the robots (set up the same as p0)
 """
 function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::Array{Float64,1}, k::Float64, r::Float64, areas;
-	max_iter = 100, tol = 1, dt = 0.1)
+	max_iter = 100, tol = 0.1, dt = 0.1)
 	p = p₀
 	numRobots = size(p,1)
 	positions = Array{Float64}(undef, 0, 2)
@@ -74,7 +74,7 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 		push!(iter_times, time() - start)
 
 		# Check termination
-		push!(residuals, norm(pnew - p)/numRobots)
+		push!(residuals, norm(pnew - p)/sqrt(numRobots))
 		if residuals[end] < tol
 			ave_time_per_iter = sum(iter_times)/length(iter_times)
 			return p, positions, residuals, ave_time_per_iter
@@ -287,7 +287,7 @@ end
 # Run everything
 ϕ = calcϕ(ψdisc, λdisc, l, w, h, r)
 areas = get_areas(ψdisc, λpartitions, r)
-p, positions, residuals, ave_time_per_iter = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 100, tol = 0.5)
+p, positions, residuals, ave_time_per_iter = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 100, tol = 0.2)
 println("Saving all timesteps positions to file")
 println(positions)
 

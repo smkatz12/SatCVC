@@ -54,7 +54,7 @@ function calcϕ(ψdisc::Array{Float64}, λdisc::Array{Float64}, l::Float64, w::F
 			n = choose_surface_normal(vc, l, w, h)
 			# Fill in ϕ using the dot product (normalize vector to center first)
 			vc_norm = vc./r
-			ϕ[i,j] = abs(dot(vc_norm, n))
+			ϕ[i,j] = abs(dot(vc_norm, n))^4
 		end
 	end
 	return ϕ
