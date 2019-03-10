@@ -45,9 +45,9 @@ k = 4.0
 # # fileName = "TwoRobotsSamePoint.csv"
 # # p₀ = [0.0 0.0; 0.0 180.0]
 
-fileName = "20flat_earth"
+fileName = "20cluster"
 #p₀ = [0.0 0.0; 10.0 10.0; 20.0 20.0; 30.0 30.0; 40.0 40.0; 50.0 50.0]
-lats = 90.0*rand(20,1) .-90.0
-longs = 180.0*rand(20,1) .-180.0
+lats = 10.0*rand(20,1) .-5.0
+longs = 10.0*rand(20,1) .-5.0
 p₀ = hcat(lats,longs)
 

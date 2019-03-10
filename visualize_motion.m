@@ -1,9 +1,11 @@
 clear
 close all
 
-data = csvread('20flat_earth.csv');
-objectType = 'rectangular_prism';
+
+data = csvread('20cluster.csv');
+objectType = 'flat_earth';
 % objectType can be 'flat_earth'  or 'rectangular_prism'
+
 n = 20; %number of robots
 dt = 0.1;
 [length, width] = size(data);
@@ -44,7 +46,7 @@ elseif (strcmp(objectType,'flat_earth'))
     %% make flat plate
     xc=0; yc=0; zc=0;    % coordinated of the center
     L=0.6;                 % width and length size (length of an edge)
-    H=0.1;
+    H=L/20;
     alpha=0.3;           % transparency (max=1=opaque)
     X = [0 0 0 0 0 1; 1 0 1 1 1 1; 1 0 1 1 1 1; 0 0 0 0 0 1];
     Y = [0 0 0 0 1 0; 0 1 0 0 1 1; 0 1 1 1 1 1; 0 0 1 1 1 0];
@@ -80,35 +82,54 @@ t = 0;  %Set movie time to 0
 i = 1;  %Set index of array to start
 pause(1);
 
-v = VideoWriter('20flat_earth.avi');
+v = VideoWriter('20cluster.avi');
 v.FrameRate = 1/0.1;
 
-while i<=timesteps
+while i<=timesteps+50
     %Every dt seconds, show position of robots
     %frame
-    
-    for j=1:1:n
-        % add robots of this timeframe
-        plot3(trajectory_XYZ(j,i*3-2),trajectory_XYZ(j,i*3-1),trajectory_XYZ(j,i*3), 'o','MarkerFaceColor',[1 .6 .6])  
-        if j ==1
-            hold on
+    if i<=timesteps
+        for j=1:1:n
+            % add robots of this timeframe
+            plot3(trajectory_XYZ(j,i*3-2),trajectory_XYZ(j,i*3-1),trajectory_XYZ(j,i*3), 'o','MarkerFaceColor',[1 .6 .6])  
+            if j ==1
+                hold on
+            end
+        end
+    else
+        for j=1:1:n
+            % add robots of this timeframe
+            plot3(trajectory_XYZ(j,timesteps*3-2),trajectory_XYZ(j,timesteps*3-1),trajectory_XYZ(j,timesteps*3), 'o','MarkerFaceColor',[1 .6 .6])  
+            if j ==1
+                hold on
+            end
         end
     end
     fill3(X,Y,Z,C,'FaceAlpha',alpha) %add cube
     plot3(x_equator,y_equator,zeros(1,numel(x_equator)),':r', 'LineWidth', 0.5)
-    %plot3(x_meridian,zeros(1,numel(x_meridian)),z_meridian,'b')
-    %plot3(zeros(1,numel(y_extra)),y_extra,z_extra,'b')
+   
     for j=1:size(psiRange,2)
         plot3(x_others(j,:),y_others(j,:),z_others(j,:),':b','LineWidth',0.5)
     end
     hold off
     axis equal
     axis([-1.2, 1.2, -1.2, 1.2, -1.2, 1.2])
-    view(3)
+    ax1 = gca;
+    ax1.XAxis.Visible = 'off';
+    ax1.YAxis.Visible = 'off';
+    ax1.ZAxis.Visible = 'off';
+    
+    %view(3)
+    view(i*(120/timesteps),15)
     xlabel('x axis')
     ylabel('y axis')
-    title(strcat('Time = ', num2str(t,2),' seconds'))
+    if i<=timesteps
+        title(strcat('Time = ', num2str(t,2),' seconds'))
+    else
+        title('Converged')
+    end
     grid minor
+    
     drawnow;
     M(i) = getframe(1);
     pause(0.1)

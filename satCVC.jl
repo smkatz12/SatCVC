@@ -65,7 +65,12 @@ function simulate_cvc(p₀::Array{Float64,2}, ψdisc::Array{Float64,1}, λdisc::
 			CVᵢ = compute_centroid(V[i], ϕ, ψdisc, λdisc, areas)
 
 			# Find ṗᵢ
-			ṗᵢ = k*rel_vector(CVᵢ,p[i,:]) # k*(CVᵢ-p[i,:])
+			ṗᵢ = k*rel_vector(CVᵢ,p[i,:])
+			println(norm(ṗᵢ))
+			max_rate = 40
+			if norm(ṗᵢ)>max_rate
+				ṗᵢ = ṗᵢ/norm(ṗᵢ)*max_rate # k*(CVᵢ-p[i,:])
+			end
 
 			# Update p
 			pnew[i,:] = norm_p(p[i,:] + vec(ṗᵢ*dt))
