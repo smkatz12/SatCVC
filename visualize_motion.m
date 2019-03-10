@@ -3,7 +3,7 @@ close all
 
 
 data = csvread('20cluster.csv');
-objectType = 'flat_earth';
+objectType = 'rectangular_prism';
 % objectType can be 'flat_earth'  or 'rectangular_prism'
 
 n = 20; %number of robots
@@ -91,7 +91,7 @@ while i<=timesteps+50
     if i<=timesteps
         for j=1:1:n
             % add robots of this timeframe
-            plot3(trajectory_XYZ(j,i*3-2),trajectory_XYZ(j,i*3-1),trajectory_XYZ(j,i*3), 'o','MarkerFaceColor',[1 .6 .6])  
+            %plot3(trajectory_XYZ(j,i*3-2),trajectory_XYZ(j,i*3-1),trajectory_XYZ(j,i*3), 'o','MarkerFaceColor',[1 .6 .6])  
             if j ==1
                 hold on
             end
@@ -99,7 +99,7 @@ while i<=timesteps+50
     else
         for j=1:1:n
             % add robots of this timeframe
-            plot3(trajectory_XYZ(j,timesteps*3-2),trajectory_XYZ(j,timesteps*3-1),trajectory_XYZ(j,timesteps*3), 'o','MarkerFaceColor',[1 .6 .6])  
+            %plot3(trajectory_XYZ(j,timesteps*3-2),trajectory_XYZ(j,timesteps*3-1),trajectory_XYZ(j,timesteps*3), 'o','MarkerFaceColor',[1 .6 .6])  
             if j ==1
                 hold on
             end
