@@ -2,6 +2,8 @@ clear
 close all
 
 data = csvread('20flat_earth.csv');
+objectType = 'rectangular_prism';
+% objectType can be 'flat_earth'  or 'rectangular_prism'
 n = 20; %number of robots
 dt = 0.1;
 [length, width] = size(data);
@@ -26,17 +28,33 @@ end
 
 %Animation
 f = figure('Color', [1 1 1 1], 'Position', [403 176 698 490])
-%% make cube
-xc=0; yc=0; zc=0;    % coordinated of the center
-L=0.6;                 % cube size (length of an edge)
-alpha=0.3;           % transparency (max=1=opaque)
-X = [0 0 0 0 0 1; 1 0 1 1 1 1; 1 0 1 1 1 1; 0 0 0 0 0 1];
-Y = [0 0 0 0 1 0; 0 1 0 0 1 1; 0 1 1 1 1 1; 0 0 1 1 1 0];
-Z = [0 0 1 0 0 0; 0 0 1 0 0 0; 1 1 1 0 1 1; 1 1 1 0 1 1];
-C='blue';                  % unicolor
-X = L*(X-0.5) + xc;
-Y = L*(Y-0.5) + yc;
-Z = L*(Z-0.5) + zc; 
+if (strcmp(objectType, 'rectangular_prism'))
+    %% make cube
+    xc=0; yc=0; zc=0;    % coordinated of the center
+    L=0.6;                 % cube size (length of an edge)
+    alpha=0.3;           % transparency (max=1=opaque)
+    X = [0 0 0 0 0 1; 1 0 1 1 1 1; 1 0 1 1 1 1; 0 0 0 0 0 1];
+    Y = [0 0 0 0 1 0; 0 1 0 0 1 1; 0 1 1 1 1 1; 0 0 1 1 1 0];
+    Z = [0 0 1 0 0 0; 0 0 1 0 0 0; 1 1 1 0 1 1; 1 1 1 0 1 1];
+    C='blue';                  % unicolor
+    X = L*(X-0.5) + xc;
+    Y = L*(Y-0.5) + yc;
+    Z = L*(Z-0.5) + zc; 
+elseif (strcmp(objectType,'flat_earth'))
+    %% make flat plate
+    xc=0; yc=0; zc=0;    % coordinated of the center
+    L=0.6;                 % width and length size (length of an edge)
+    H=0.1;
+    alpha=0.3;           % transparency (max=1=opaque)
+    X = [0 0 0 0 0 1; 1 0 1 1 1 1; 1 0 1 1 1 1; 0 0 0 0 0 1];
+    Y = [0 0 0 0 1 0; 0 1 0 0 1 1; 0 1 1 1 1 1; 0 0 1 1 1 0];
+    Z = [0 0 1 0 0 0; 0 0 1 0 0 0; 1 1 1 0 1 1; 1 1 1 0 1 1];
+    C='blue';                  % unicolor
+    X = L*(X-0.5) + xc;
+    Y = L*(Y-0.5) + yc;
+    Z = H*(Z-0.5) + zc; 
+end
+
 
 %% make circle equator and prime meridians
 r_circle=1;
