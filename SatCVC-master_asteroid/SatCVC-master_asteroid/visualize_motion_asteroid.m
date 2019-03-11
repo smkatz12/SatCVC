@@ -126,7 +126,7 @@ while i<=timesteps+50
         plot3(x_others(j,:),y_others(j,:),z_others(j,:),':b','LineWidth',0.5)
     end
     hold off
-    %axis equal
+    axis equal
     %axis([-1.2, 1.2, -1.2, 1.2, -1.2, 1.2])
     ax1 = gca;
     ax1.XAxis.Visible = 'off';

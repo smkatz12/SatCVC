@@ -35,6 +35,6 @@ k = 4.0
 
 fileName = "ThirtyRobotsAsteroid_ellipsoid"
 #p₀ = [0.0 0.0; 10.0 10.0; 20.0 20.0; 30.0 30.0; 40.0 40.0; 50.0 50.0]
-lats = 10.0*rand(20,1) .-5.0
-longs = 10.0*rand(20,1) .-5.0
+lats = 10.0*rand(30,1) .-5.0
+longs = 10.0*rand(30,1) .-5.0
 p₀ = hcat(lats,longs)
