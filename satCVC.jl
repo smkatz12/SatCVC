@@ -292,7 +292,7 @@ end
 # Run everything
 ϕ = calcϕ(ψdisc, λdisc, l, w, h, r)
 areas = get_areas(ψdisc, λpartitions, r)
-p, positions, residuals, ave_time_per_iter = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 100, tol = 0.2)
+p, positions, residuals, ave_time_per_iter = simulate_cvc(p₀, ψdisc, λdisc, k, r, areas, max_iter = 150, tol = 0.2)
 println("Saving all timesteps positions to file")
 println(positions)
 

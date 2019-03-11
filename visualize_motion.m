@@ -2,8 +2,8 @@ clear
 close all
 
 
-data = csvread('20cluster.csv');
-objectType = 'rectangular_prism';
+data = csvread('20flat_earth.csv');
+objectType = 'flat_earth';
 % objectType can be 'flat_earth'  or 'rectangular_prism'
 
 n = 20; %number of robots
@@ -82,7 +82,7 @@ t = 0;  %Set movie time to 0
 i = 1;  %Set index of array to start
 pause(1);
 
-v = VideoWriter('20cluster.avi');
+v = VideoWriter('20flat_earth.avi');
 v.FrameRate = 1/0.1;
 
 while i<=timesteps+50
@@ -91,7 +91,7 @@ while i<=timesteps+50
     if i<=timesteps
         for j=1:1:n
             % add robots of this timeframe
-            %plot3(trajectory_XYZ(j,i*3-2),trajectory_XYZ(j,i*3-1),trajectory_XYZ(j,i*3), 'o','MarkerFaceColor',[1 .6 .6])  
+            plot3(trajectory_XYZ(j,i*3-2),trajectory_XYZ(j,i*3-1),trajectory_XYZ(j,i*3), 'o','MarkerFaceColor',[1 .6 .6])  
             if j ==1
                 hold on
             end
@@ -99,7 +99,7 @@ while i<=timesteps+50
     else
         for j=1:1:n
             % add robots of this timeframe
-            %plot3(trajectory_XYZ(j,timesteps*3-2),trajectory_XYZ(j,timesteps*3-1),trajectory_XYZ(j,timesteps*3), 'o','MarkerFaceColor',[1 .6 .6])  
+            plot3(trajectory_XYZ(j,timesteps*3-2),trajectory_XYZ(j,timesteps*3-1),trajectory_XYZ(j,timesteps*3), 'o','MarkerFaceColor',[1 .6 .6])  
             if j ==1
                 hold on
             end
