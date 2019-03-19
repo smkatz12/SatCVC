@@ -108,7 +108,7 @@ while i<=timesteps+50
                 hold on
             end
         end
-    elseif i<=timesteps+10
+    elseif i<=timesteps+15
         for j=1:1:n
             % add robots of this timeframe
             plot3(trajectory_XYZ(j,timesteps*3-2),trajectory_XYZ(j,timesteps*3-1),trajectory_XYZ(j,timesteps*3), 'o','MarkerFaceColor',[1 .6 .6])
@@ -129,10 +129,10 @@ while i<=timesteps+50
     end
     
     %fill3(X,Y,Z,C,'FaceAlpha',alpha) %add cube
-    if i<=timesteps+10
+    if i<=timesteps+15
         trisurf(T,Xb(:,1),Xb(:,2),Xb(:,3), ...
         'FaceColor','cyan','FaceAlpha',0.8);
-    elseif i<=timesteps+15
+    elseif i<=timesteps+19
         for j=1:1:n
             % add robots of this timeframe
             img = imread('explosion.png'); %add cube

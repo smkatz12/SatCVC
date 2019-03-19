@@ -2,11 +2,11 @@ clear
 close all
 
 
-data = csvread('20flat_earth.csv');
-objectType = 'flat_earth';
+data = csvread('30_cluster.csv');
+objectType = 'rectangular_prism';
 % objectType can be 'flat_earth'  or 'rectangular_prism'
 
-n = 20; %number of robots
+n = 30; %number of robots
 dt = 0.1;
 [length, width] = size(data);
 timesteps = length/n; %number of timesteps
@@ -82,7 +82,7 @@ t = 0;  %Set movie time to 0
 i = 1;  %Set index of array to start
 pause(1);
 
-v = VideoWriter('20flat_earth.avi');
+v = VideoWriter('30_cluster.avi');
 v.FrameRate = 1/0.1;
 
 while i<=timesteps+50

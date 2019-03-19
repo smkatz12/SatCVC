@@ -17,7 +17,7 @@ radius of sphere defining surface, etc.)
 r = 100.0
 l = 20.0
 w = 20.0
-h = 1.0
+h = 20.0
 
 
 
@@ -43,11 +43,11 @@ k = 4.0
 #p₀ = [1.0 0.2; -1.0 -0.2; 1.0 0.1; 0.0 -0.1; 0.0 0.3; 0.0 -0.3; 0.0 0.4; 0.0 -0.4]
 
 # # fileName = "TwoRobotsSamePoint.csv"
-#p₀ = [0.0 0.0; 0.0 45.0]
+#p₀ = [45.0 90.0; 45.0 -90.0]
 
-fileName = "20flat_earth"
+fileName = "30_flatearth"
 #p₀ = [0.0 0.0; 10.0 10.0; 20.0 20.0; 30.0 30.0; 40.0 40.0; 50.0 50.0]
-lats = 10.0*rand(20,1) .-5.0
-longs = 10.0*rand(20,1) .-5.0
+lats = 10.0*rand(30,1) .-5.0
+longs = 20.0*rand(30,1) .-10.0
 p₀ = hcat(lats,longs)
 
